@@ -17,6 +17,11 @@ import {
   Layers,
   School,
   Sparkles,
+  Eye,
+  EyeOff,
+  Key,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { Student } from '@/lib/types';
 import { dataService } from '@/lib/data-service';
@@ -70,6 +75,17 @@ export const StudentManagementView: React.FC<StudentManagementViewProps> = ({ on
   const [newClass, setNewClass] = useState('Class 9');
   const [newSection, setNewSection] = useState('A');
   const [newGender, setNewGender] = useState<'male' | 'female'>('male');
+  const [newPassword, setNewPassword] = useState('NSSC@2025');
+  const [showPassword, setShowPassword] = useState(false);
+  const [credentialModalData, setCredentialModalData] = useState<{
+    name: string;
+    studentCode: string;
+    className: string;
+    sectionName: string;
+    password: string;
+    email: string;
+  } | null>(null);
+  const [copiedCredential, setCopiedCredential] = useState(false);
 
   // New Class Form State
   const [newClassName, setNewClassName] = useState('');
@@ -326,9 +342,18 @@ export const StudentManagementView: React.FC<StudentManagementViewProps> = ({ on
     }
 
     setShowAddModal(false);
+    setCredentialModalData({
+      name: newStudent.profile?.full_name || newName,
+      studentCode: studentCode,
+      className: newClass,
+      sectionName: newSection,
+      password: newPassword.trim() || studentCode,
+      email: newEmail || `${newName.toLowerCase().replace(/\s+/g, '.')}@northernstar.edu.bd`,
+    });
     setNewName('');
     setNewEmail('');
     setNewPhone('');
+    setNewPassword('NSSC@2025');
   };
 
   // Compute available sections based on the active selected class
@@ -834,6 +859,46 @@ export const StudentManagementView: React.FC<StudentManagementViewProps> = ({ on
                 </div>
               </div>
 
+              {/* Portal & App Access Password */}
+              <div className="bg-blue-50/70 p-3 rounded-2xl border border-blue-100">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                    <Key className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Access Password (Mobile App & Portal)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const rand = Math.floor(1000 + Math.random() * 9000);
+                      setNewPassword(`NSC@${rand}`);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded-lg border border-blue-200 shadow-xs"
+                  >
+                    Auto-Generate
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    placeholder="Set access password (e.g. NSSC@2025)"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full text-xs p-2.5 pr-10 bg-white border border-blue-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Student/Parent will use their <strong>Student ID</strong> and this <strong>Password</strong> to log in.
+                </p>
+              </div>
+
               <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
@@ -850,6 +915,77 @@ export const StudentManagementView: React.FC<StudentManagementViewProps> = ({ on
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: STUDENT CREDENTIAL HANDOUT PASS */}
+      {credentialModalData && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 text-center">
+            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+              <CheckCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-extrabold text-slate-900">Student Admitted Successfully!</h3>
+            <p className="text-xs text-slate-500 mb-4">Official login credentials generated for mobile app and student portal.</p>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-2 mb-4 font-mono text-xs">
+              <div className="flex justify-between border-b border-slate-200 pb-1.5 font-sans">
+                <span className="text-slate-500">Student:</span>
+                <span className="font-bold text-slate-900">{credentialModalData.name}</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-200 pb-1.5 font-sans">
+                <span className="text-slate-500">Class & Section:</span>
+                <span className="font-bold text-slate-900">{credentialModalData.className} - {credentialModalData.sectionName}</span>
+              </div>
+              <div className="flex justify-between items-center bg-blue-50/70 p-2 rounded-xl border border-blue-100">
+                <span className="font-sans text-blue-900 font-bold">Student ID:</span>
+                <span className="font-mono font-bold text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">
+                  {credentialModalData.studentCode}
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-emerald-50/70 p-2 rounded-xl border border-emerald-100">
+                <span className="font-sans text-emerald-900 font-bold">Password:</span>
+                <span className="font-mono font-bold text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-200">
+                  {credentialModalData.password}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const text = `Northern Star Smart Campus - Login Pass\nStudent: ${credentialModalData.name}\nClass: ${credentialModalData.className}-${credentialModalData.sectionName}\nStudent ID: ${credentialModalData.studentCode}\nPassword: ${credentialModalData.password}\nPortal: https://web-seven-blond-14.vercel.app`;
+                  navigator.clipboard.writeText(text);
+                  setCopiedCredential(true);
+                  setTimeout(() => setCopiedCredential(false), 2500);
+                }}
+                className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 shadow-sm ${
+                  copiedCredential ? 'bg-emerald-600 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white'
+                }`}
+              >
+                {copiedCredential ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Credentials Copied to Clipboard!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy Login Pass for Student / Parent</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCredentialModalData(null)}
+                className="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-800 rounded-xl"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       )}
