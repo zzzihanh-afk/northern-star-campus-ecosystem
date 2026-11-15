@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/campus_theme.dart';
+import '../../models/user_profile.dart';
 
 class TeacherHomeScreen extends StatelessWidget {
   final Function(String route) onNavigate;
+  final UserProfile? userProfile;
 
-  const TeacherHomeScreen({Key? key, required this.onNavigate}) : super(key: key);
+  const TeacherHomeScreen({
+    Key? key,
+    required this.onNavigate,
+    this.userProfile,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +46,8 @@ class TeacherHomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
-                    image: const DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'),
+                    image: DecorationImage(
+                      image: NetworkImage(userProfile?.avatarUrl ?? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -49,10 +55,21 @@ class TeacherHomeScreen extends StatelessWidget {
                 const SizedBox(width: 14),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Mr. Tanvir Hasan', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800)),
-                    SizedBox(height: 2),
-                    Text('Teacher (Mathematics)', style: TextStyle(color: Color(0xFFD1FAE5), fontSize: 12, fontWeight: FontWeight.w600)),
+                  children: [
+                    Text(
+                      userProfile?.fullName ?? 'Mr. Tanvir Hasan',
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Teacher (${userProfile?.department ?? "Mathematics"})',
+                      style: const TextStyle(color: Color(0xFFD1FAE5), fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      'ID: ${userProfile?.studentIdCode ?? "TCH2025001"}',
+                      style: const TextStyle(color: Color(0xFFA7F3D0), fontSize: 10, fontFamily: 'monospace', fontWeight: FontWeight.w700),
+                    ),
                   ],
                 ),
               ],

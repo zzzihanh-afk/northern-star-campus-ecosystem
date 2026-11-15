@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/campus_theme.dart';
 import '../../config/remote_config_manager.dart';
+import '../../models/user_profile.dart';
 
 class StudentHomeScreen extends StatelessWidget {
   final Function(String route) onNavigate;
+  final UserProfile? userProfile;
 
-  const StudentHomeScreen({Key? key, required this.onNavigate}) : super(key: key);
+  const StudentHomeScreen({
+    Key? key,
+    required this.onNavigate,
+    this.userProfile,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +52,8 @@ class StudentHomeScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
-                        image: const DecorationImage(
-                          image: NetworkImage('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'),
+                        image: DecorationImage(
+                          image: NetworkImage(userProfile?.avatarUrl ?? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -55,20 +61,20 @@ class StudentHomeScreen extends StatelessWidget {
                     const SizedBox(width: 14),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          'Rahim Ahmed',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                          userProfile?.fullName ?? 'Rahim Ahmed',
+                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          'Class: 9-A',
-                          style: TextStyle(color: Color(0xFFE0F2FE), fontSize: 12, fontWeight: FontWeight.w600),
+                          'Class: ${userProfile?.className ?? "9"}-${userProfile?.sectionName ?? "A"}',
+                          style: const TextStyle(color: Color(0xFFE0F2FE), fontSize: 12, fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(height: 1),
+                        const SizedBox(height: 1),
                         Text(
-                          'ID: NSC2025001',
-                          style: TextStyle(color: Color(0xFFBAE6FD), fontSize: 11, fontFamily: 'monospace', fontWeight: FontWeight.w700),
+                          'ID: ${userProfile?.studentIdCode ?? "NSC2025001"}',
+                          style: const TextStyle(color: Color(0xFFBAE6FD), fontSize: 11, fontFamily: 'monospace', fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),

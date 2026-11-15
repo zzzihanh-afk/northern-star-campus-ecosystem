@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/campus_theme.dart';
+import '../../models/user_profile.dart';
 
 class ParentHomeScreen extends StatelessWidget {
   final Function(String route) onNavigate;
+  final UserProfile? userProfile;
 
-  const ParentHomeScreen({Key? key, required this.onNavigate}) : super(key: key);
+  const ParentHomeScreen({
+    Key? key,
+    required this.onNavigate,
+    this.userProfile,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +46,8 @@ class ParentHomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
-                    image: const DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150'),
+                    image: DecorationImage(
+                      image: NetworkImage(userProfile?.avatarUrl ?? 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -49,15 +55,17 @@ class ParentHomeScreen extends StatelessWidget {
                 const SizedBox(width: 14),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      'Mrs. Fatema Akter',
-                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                      userProfile?.fullName ?? 'Mrs. Fatema Akter',
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      'Parent of Rahim Ahmed (9-A)',
-                      style: TextStyle(color: Color(0xFFF3E8FF), fontSize: 12, fontWeight: FontWeight.w600),
+                      userProfile?.childName != null
+                          ? 'Parent of ${userProfile!.childName}'
+                          : 'Parent • ID: ${userProfile?.studentIdCode ?? "PRN2025001"}',
+                      style: const TextStyle(color: Color(0xFFF3E8FF), fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),

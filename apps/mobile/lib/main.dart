@@ -15,6 +15,7 @@ import 'features/fees/fees_screen.dart';
 import 'features/library/library_screen.dart';
 import 'features/digital_id/digital_id_screen.dart';
 import 'features/notifications/notifications_screen.dart';
+import 'features/homework/homework_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,16 +46,16 @@ class CampusRootNavigator extends StatefulWidget {
 }
 
 class _CampusRootNavigatorState extends State<CampusRootNavigator> {
-  UserRole? _currentRole;
+  UserProfile? _currentUser;
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    if (_currentRole == null) {
+    if (_currentUser == null) {
       return LoginScreen(
-        onLoginSuccess: (role) {
+        onLoginSuccess: (profile) {
           setState(() {
-            _currentRole = role;
+            _currentUser = profile;
           });
         },
       );
@@ -89,9 +90,9 @@ class _CampusRootNavigatorState extends State<CampusRootNavigator> {
                     const SizedBox(height: 24),
                     TextButton(
                       onPressed: () {
-                        setState(() => _currentRole = null);
+                        setState(() => _currentUser = null);
                       },
-                      child: const Text('Back to Portal Switcher', style: TextStyle(color: CampusTheme.goldAccent)),
+                      child: const Text('Back to Login', style: TextStyle(color: CampusTheme.goldAccent)),
                     ),
                   ],
                 ),
@@ -110,11 +111,11 @@ class _CampusRootNavigatorState extends State<CampusRootNavigator> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  remoteConfig.appName,
+                  _currentUser!.fullName,
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: CampusTheme.navyDark),
                 ),
                 Text(
-                  '${_getRoleTitle(_currentRole!)} Mode',
+                  '${_getRoleTitle(_currentUser!.role)} • ${_currentUser!.studentIdCode ?? AppConstants.institutionName}',
                   style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: CampusTheme.royalBlue),
                 ),
               ],
@@ -125,16 +126,16 @@ class _CampusRootNavigatorState extends State<CampusRootNavigator> {
                 onPressed: () => _navigateTo(context, const NotificationsScreen()),
               ),
               IconButton(
-                icon: const Icon(Icons.swap_horiz, size: 22),
-                tooltip: 'Switch Portal',
+                icon: const Icon(Icons.logout, size: 20, color: Color(0xFFDC2626)),
+                tooltip: 'Logout / Switch User',
                 onPressed: () {
-                  setState(() => _currentRole = null);
+                  setState(() => _currentUser = null);
                 },
               ),
             ],
           ),
-          body: _buildCurrentPortal(_currentRole!),
-          bottomNavigationBar: _buildBottomNav(_currentRole!),
+          body: _buildCurrentPortal(_currentUser!.role),
+          bottomNavigationBar: _buildBottomNav(_currentUser!.role),
         );
       },
     );
@@ -143,14 +144,14 @@ class _CampusRootNavigatorState extends State<CampusRootNavigator> {
   Widget _buildCurrentPortal(UserRole role) {
     switch (role) {
       case UserRole.student:
-        return StudentHomeScreen(onNavigate: _handleInternalNav);
+        return StudentHomeScreen(onNavigate: _handleInternalNav, userProfile: _currentUser);
       case UserRole.parent:
-        return ParentHomeScreen(onNavigate: _handleInternalNav);
+        return ParentHomeScreen(onNavigate: _handleInternalNav, userProfile: _currentUser);
       case UserRole.teacher:
-        return TeacherHomeScreen(onNavigate: _handleInternalNav);
+        return TeacherHomeScreen(onNavigate: _handleInternalNav, userProfile: _currentUser);
       case UserRole.staff:
       default:
-        return StaffHomeScreen(onNavigate: _handleInternalNav);
+        return StaffHomeScreen(onNavigate: _handleInternalNav, userProfile: _currentUser);
     }
   }
 
@@ -158,6 +159,9 @@ class _CampusRootNavigatorState extends State<CampusRootNavigator> {
     switch (route) {
       case 'attendance':
         _navigateTo(context, const AttendanceScreen());
+        break;
+      case 'homework':
+        _navigateTo(context, HomeworkScreen(userProfile: _currentUser));
         break;
       case 'results':
         _navigateTo(context, const ResultsScreen());

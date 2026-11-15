@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/campus_theme.dart';
+import '../../models/user_profile.dart';
 
 class StaffHomeScreen extends StatelessWidget {
   final Function(String route) onNavigate;
+  final UserProfile? userProfile;
 
-  const StaffHomeScreen({Key? key, required this.onNavigate}) : super(key: key);
+  const StaffHomeScreen({
+    Key? key,
+    required this.onNavigate,
+    this.userProfile,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +39,8 @@ class StaffHomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
-                    image: const DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150'),
+                    image: DecorationImage(
+                      image: NetworkImage(userProfile?.avatarUrl ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -42,10 +48,21 @@ class StaffHomeScreen extends StatelessWidget {
                 const SizedBox(width: 14),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Ms. Nusrat Jahan', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800)),
-                    SizedBox(height: 2),
-                    Text('Staff (Administration)', style: TextStyle(color: Color(0xFFCBD5E1), fontSize: 12, fontWeight: FontWeight.w600)),
+                  children: [
+                    Text(
+                      userProfile?.fullName ?? 'Ms. Nusrat Jahan',
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Staff (${userProfile?.department ?? "Administration"})',
+                      style: const TextStyle(color: Color(0xFFCBD5E1), fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      'ID: ${userProfile?.studentIdCode ?? "STF2025001"}',
+                      style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10, fontFamily: 'monospace', fontWeight: FontWeight.w700),
+                    ),
                   ],
                 ),
               ],
