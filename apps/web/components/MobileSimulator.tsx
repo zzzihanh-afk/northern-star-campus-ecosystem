@@ -34,6 +34,7 @@ import { dataService } from '@/lib/data-service';
 import { AppModule, AppConfiguration } from '@/lib/types';
 
 export const MobileSimulator: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'interactive-preview' | 'flutter-live'>('interactive-preview');
   const [selectedRole, setSelectedRole] = useState<'student' | 'parent' | 'teacher' | 'staff'>('student');
   const [currentScreen, setCurrentScreen] = useState<'home' | 'attendance' | 'results' | 'fees' | 'library' | 'notifications' | 'digital-id'>('home');
   const [config, setConfig] = useState<AppConfiguration | null>(null);
@@ -72,6 +73,33 @@ export const MobileSimulator: React.FC = () => {
           <p className="text-xs text-slate-500 mt-0.5">
             Test all four role experiences and verified sub-screens matching the official mobile showcase.
           </p>
+        </div>
+
+        {/* Engine Toggle */}
+        <div className="bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+          <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1 px-1">Simulator Engine</label>
+          <div className="grid grid-cols-2 gap-1">
+            <button
+              onClick={() => setViewMode('interactive-preview')}
+              className={`py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center space-x-1 ${
+                viewMode === 'interactive-preview'
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>📱 UI Mockup</span>
+            </button>
+            <button
+              onClick={() => setViewMode('flutter-live')}
+              className={`py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center space-x-1 ${
+                viewMode === 'flutter-live'
+                  ? 'bg-[#0B1E38] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>⚡ Real Flutter</span>
+            </button>
+          </div>
         </div>
 
         <div>
@@ -177,7 +205,27 @@ export const MobileSimulator: React.FC = () => {
 
         {/* Mobile Screen Container */}
         <div className="w-full h-full bg-[#F4F6F9] rounded-[36px] overflow-hidden flex flex-col relative text-slate-800 font-sans">
-          {/* Top Status Bar */}
+          {viewMode === 'flutter-live' ? (
+            <div className="w-full h-full pt-6 relative bg-white flex flex-col">
+              <div className="px-4 py-1.5 flex items-center justify-between border-b border-slate-100 bg-slate-50 text-[10px] text-slate-500 font-medium z-10">
+                <span className="flex items-center space-x-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="font-bold text-slate-700">Flutter Web Runtime</span>
+                </span>
+                <span className="text-blue-600 font-bold text-[9px] uppercase tracking-wider bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                  Live WASM/Dart
+                </span>
+              </div>
+              <iframe
+                id="flutter-frame"
+                src="/mobile-app/index.html"
+                className="w-full flex-1 border-0"
+                title="Flutter Mobile Application"
+              />
+            </div>
+          ) : (
+            <>
+              {/* Top Status Bar */}
           <div className="h-10 pt-2 px-6 flex items-center justify-between text-[11px] font-bold text-slate-600 z-40 bg-transparent">
             <span>9:41</span>
             <div className="flex items-center space-x-1.5">
@@ -950,6 +998,8 @@ export const MobileSimulator: React.FC = () => {
               <span>More</span>
             </button>
           </div>
+        </>
+      )}
         </div>
       </div>
     </div>

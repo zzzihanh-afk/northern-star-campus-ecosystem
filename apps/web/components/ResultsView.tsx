@@ -59,13 +59,18 @@ export const ResultsView: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-card">
-        <div>
-          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight font-sans">
-            Examinations & Academic Transcripts
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Automated GPA 5.0 calculation, class ranking, marks verification and official result publication.
-          </p>
+        <div className="flex items-start space-x-4">
+          <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl border border-amber-100">
+            <Award className="w-7 h-7" />
+          </div>
+          <div>
+            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight font-sans">
+              Academic Results, Transcripts & Merit Reports
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Automated GPA 5.0 calculation, class ranking standings, subject marks verification and official result publication.
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center space-x-3">

@@ -9,8 +9,12 @@ import { MobileSimulator } from '@/components/MobileSimulator';
 import { StudentManagementView } from '@/components/StudentManagementView';
 import { AttendanceView } from '@/components/AttendanceView';
 import { ResultsView } from '@/components/ResultsView';
+import { ExaminationsView } from '@/components/ExaminationsView';
 import { FeeManagementView } from '@/components/FeeManagementView';
 import { OperationsView } from '@/components/OperationsView';
+import { LibraryView } from '@/components/LibraryView';
+import { TransportView } from '@/components/TransportView';
+import { InventoryView } from '@/components/InventoryView';
 import { dataService } from '@/lib/data-service';
 import { DashboardStats } from '@/lib/types';
 import { isSupabaseConfigured } from '@/lib/supabase';
@@ -71,16 +75,19 @@ export default function Home() {
 
           {activeModule === 'attendance' && <AttendanceView />}
 
-          {activeModule === 'results' && <ResultsView />}
+          {activeModule === 'examinations' && <ExaminationsView />}
 
-          {activeModule === 'examinations' && <ResultsView />}
+          {activeModule === 'results' && <ResultsView />}
 
           {activeModule === 'fees' && <FeeManagementView />}
 
-          {(activeModule === 'library' ||
-            activeModule === 'transport' ||
-            activeModule === 'inventory' ||
-            activeModule === 'operations') && <OperationsView />}
+          {activeModule === 'library' && <LibraryView />}
+
+          {activeModule === 'transport' && <TransportView />}
+
+          {activeModule === 'inventory' && <InventoryView />}
+
+          {activeModule === 'operations' && <OperationsView />}
 
           {activeModule === 'academics' && (
             <div className="space-y-6">

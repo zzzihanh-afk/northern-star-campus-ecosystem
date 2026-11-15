@@ -336,7 +336,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ stats, onNavigate 
                 fill="transparent"
                 strokeDasharray="339.29"
                 strokeDashoffset="230.71"
-                strokeDashoffset-custom="30"
                 style={{ transformOrigin: 'center', transform: 'rotate(172deg)' }}
               />
               {/* Others: 20% -> Amber */}
