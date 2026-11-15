@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Student } from '@/lib/types';
 import { dataService } from '@/lib/data-service';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export interface ClassDefinition {
   id: string;
@@ -218,6 +219,33 @@ export const StudentManagementView: React.FC = () => {
     setClasses([...classes, createdClass]);
     setSelectedClass(createdClass.name);
     setSelectedSection('All');
+
+    if (isSupabaseConfigured && supabase) {
+      const client = supabase;
+      try {
+        client.from('classes').insert({
+          institution_id: process.env.NEXT_PUBLIC_DEFAULT_INSTITUTION_ID || 'a0000000-0000-0000-0000-000000000001',
+          name: createdClass.name,
+          numeric_level: 10,
+          category: createdClass.category.toLowerCase(),
+        }).then(({ data }) => {
+          if (data && createdClass.sections.length > 0) {
+            const classRow = (data as any)[0];
+            if (classRow) {
+              const sectionsToInsert = createdClass.sections.map((secName) => ({
+                institution_id: process.env.NEXT_PUBLIC_DEFAULT_INSTITUTION_ID || 'a0000000-0000-0000-0000-000000000001',
+                class_id: classRow.id,
+                name: secName,
+              }));
+              client.from('sections').insert(sectionsToInsert).then();
+            }
+          }
+        });
+      } catch (err) {
+        console.warn('Class Supabase sync notice:', err);
+      }
+    }
+
     setShowAddClassModal(false);
     setNewClassName('');
     setNewClassSections(['Section A', 'Section B']);
@@ -260,6 +288,39 @@ export const StudentManagementView: React.FC = () => {
     };
 
     setStudents([newStudent, ...students]);
+
+    if (isSupabaseConfigured && supabase && newStudent.profile) {
+      const client = supabase;
+      const prof = newStudent.profile;
+      try {
+        const newProfId = crypto.randomUUID();
+        client.from('profiles').insert({
+          id: newProfId,
+          institution_id: process.env.NEXT_PUBLIC_DEFAULT_INSTITUTION_ID || 'a0000000-0000-0000-0000-000000000001',
+          full_name: prof.full_name,
+          email: prof.email,
+          role: 'student',
+          phone: prof.phone,
+          gender: prof.gender,
+          avatar_url: prof.avatar_url,
+          is_active: true,
+        }).then(() => {
+          client.from('students').insert({
+            profile_id: newProfId,
+            institution_id: process.env.NEXT_PUBLIC_DEFAULT_INSTITUTION_ID || 'a0000000-0000-0000-0000-000000000001',
+            student_id_code: newStudent.student_id_code,
+            class_id: 'e0000000-0000-0000-0000-000000000009',
+            section_id: 'f0000000-0000-0000-0000-000000000001',
+            roll_number: newStudent.roll_number,
+            status: 'active',
+            qr_code_token: newStudent.qr_code_token,
+          }).then();
+        });
+      } catch (err) {
+        console.warn('Student Supabase sync notice:', err);
+      }
+    }
+
     setShowAddModal(false);
     setNewName('');
     setNewEmail('');

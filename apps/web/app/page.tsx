@@ -7,6 +7,9 @@ import { DashboardView } from '@/components/DashboardView';
 import { MobileControlCenter } from '@/components/MobileControlCenter';
 import { MobileSimulator } from '@/components/MobileSimulator';
 import { StudentManagementView } from '@/components/StudentManagementView';
+import { TeacherManagementView } from '@/components/TeacherManagementView';
+import { ParentManagementView } from '@/components/ParentManagementView';
+import { StaffManagementView } from '@/components/StaffManagementView';
 import { AttendanceView } from '@/components/AttendanceView';
 import { ResultsView } from '@/components/ResultsView';
 import { ExaminationsView } from '@/components/ExaminationsView';
@@ -76,7 +79,13 @@ export default function Home() {
 
           {activeModule === 'mobile-preview' && <MobileSimulator />}
 
-          {activeModule === 'students' && <StudentManagementView />}
+          {activeModule === 'students' && <StudentManagementView onNavigate={setActiveModule} />}
+
+          {activeModule === 'teachers' && <TeacherManagementView />}
+
+          {activeModule === 'parents' && <ParentManagementView />}
+
+          {activeModule === 'staff' && <StaffManagementView />}
 
           {activeModule === 'attendance' && <AttendanceView />}
 

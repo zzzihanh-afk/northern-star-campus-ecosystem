@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import {
   BookOpen,
   Search,
@@ -111,6 +112,32 @@ export const LibraryView: React.FC = () => {
     },
   ]);
 
+  // Fetch live books from Supabase if configured
+  useEffect(() => {
+    async function loadBooks() {
+      if (!isSupabaseConfigured || !supabase) return;
+      try {
+        const { data, error } = await supabase.from('books').select('*').order('created_at', { ascending: false });
+        if (data && !error && data.length > 0) {
+          const mapped: BookItem[] = data.map((b: any) => ({
+            id: b.id,
+            title: b.title,
+            author: b.author || 'Faculty & Curators',
+            category: 'General',
+            isbn: b.isbn || 'N/A',
+            available: b.available_copies ?? b.total_copies ?? 5,
+            total: b.total_copies ?? 5,
+            cover: b.cover_image_url || 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=300',
+          }));
+          setBooks(mapped);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch books from Supabase:', err);
+      }
+    }
+    loadBooks();
+  }, []);
+
   const [issuedRecords, setIssuedRecords] = useState<IssuedRecord[]>([
     {
       id: 'iss-1',
@@ -209,7 +236,7 @@ export const LibraryView: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleAddBook = (e: React.FormEvent) => {
+  const handleAddBook = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
     const newBook: BookItem = {
@@ -223,6 +250,23 @@ export const LibraryView: React.FC = () => {
       cover: newCover || PRESET_COVERS[0].url,
     };
     setBooks([newBook, ...books]);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('books').insert({
+          institution_id: process.env.NEXT_PUBLIC_DEFAULT_INSTITUTION_ID || 'a0000000-0000-0000-0000-000000000001',
+          title: newBook.title,
+          author: newBook.author,
+          isbn: newBook.isbn,
+          total_copies: newBook.total,
+          available_copies: newBook.available,
+          cover_image_url: newBook.cover,
+        });
+      } catch (err) {
+        console.warn('Live Supabase book sync notice:', err);
+      }
+    }
+
     setShowAddModal(false);
     setNewTitle('');
     setNewAuthor('');

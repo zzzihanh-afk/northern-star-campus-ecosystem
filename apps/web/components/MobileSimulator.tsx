@@ -36,6 +36,7 @@ import {
   FileCheck,
 } from 'lucide-react';
 import { dataService } from '@/lib/data-service';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { AppModule, AppConfiguration } from '@/lib/types';
 
 interface SimUser {
@@ -246,7 +247,7 @@ export const MobileSimulator: React.FC = () => {
     }
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedName = loginName.trim();
     const trimmedId = loginId.trim();
@@ -257,6 +258,37 @@ export const MobileSimulator: React.FC = () => {
     }
 
     setLoginError(null);
+
+    // 1. Direct Live Supabase Database lookup
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: studentData } = await supabase
+          .from('students')
+          .select('id, student_id_code, roll_number, profiles(full_name, email, avatar_url, phone)')
+          .ilike('student_id_code', trimmedId)
+          .maybeSingle();
+
+        if (studentData) {
+          const prof = (studentData as any).profiles;
+          const liveUser: SimUser = {
+            id: studentData.id,
+            name: prof?.full_name || trimmedName,
+            role: 'student',
+            idNumber: studentData.student_id_code,
+            className: 'Class 9',
+            sectionName: 'A',
+            avatar: prof?.avatar_url || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
+          };
+          setCurrentUser(liveUser);
+          setSelectedRole('student');
+          setIsLoggedIn(true);
+          setCurrentScreen('home');
+          return;
+        }
+      } catch (err) {
+        console.warn('Live Supabase simulator login note:', err);
+      }
+    }
 
     // Look up in registered accounts
     const match = REGISTERED_ACCOUNTS.find(

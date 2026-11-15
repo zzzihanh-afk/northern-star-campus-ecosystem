@@ -124,6 +124,22 @@ export interface Staff {
   designation_title?: string;
 }
 
+export interface Parent {
+  id: string;
+  profile_id?: string;
+  institution_id?: string;
+  full_name: string;
+  relation: 'Father' | 'Mother' | 'Guardian';
+  student_name: string;
+  student_code: string;
+  student_class: string;
+  phone: string;
+  email?: string;
+  occupation?: string;
+  address?: string;
+  is_active: boolean;
+}
+
 export interface ClassItem {
   id: string;
   institution_id: string;

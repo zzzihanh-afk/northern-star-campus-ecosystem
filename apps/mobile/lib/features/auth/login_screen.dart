@@ -152,6 +152,27 @@ class _LoginScreenState extends State<LoginScreen> {
             avatarUrl: profile?['avatar_url'] ?? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
             phone: profile?['phone'],
           );
+        } else {
+          // Check teachers table in Supabase
+          final teacherRes = await client
+              .from('teachers')
+              .select('id, employee_id_code, profiles(full_name, email, avatar_url, phone)')
+              .ilike('employee_id_code', idInput)
+              .maybeSingle();
+
+          if (teacherRes != null) {
+            final profile = teacherRes['profiles'] as Map<String, dynamic>?;
+            matchedProfile = UserProfile(
+              id: teacherRes['id'] ?? '',
+              email: profile?['email'] ?? '',
+              fullName: profile?['full_name'] ?? nameInput,
+              role: UserRole.teacher,
+              studentIdCode: teacherRes['employee_id_code'],
+              department: 'Faculty',
+              avatarUrl: profile?['avatar_url'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+              phone: profile?['phone'],
+            );
+          }
         }
       } catch (e) {
         print('[Login] Supabase live check note: $e');

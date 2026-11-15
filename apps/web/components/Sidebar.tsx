@@ -19,6 +19,9 @@ import {
   Smartphone,
   Radio,
   CheckCircle2,
+  UserCheck,
+  HeartHandshake,
+  Briefcase,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -30,6 +33,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeModule, setActiveModule 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'students', label: 'Student Management', icon: Users },
+    { id: 'teachers', label: 'Teacher Management', icon: UserCheck },
+    { id: 'parents', label: 'Parent Directory', icon: HeartHandshake },
+    { id: 'staff', label: 'Staff Management', icon: Briefcase },
     { id: 'academics', label: 'Academic Management', icon: GraduationCap },
     { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
     { id: 'examinations', label: 'Examinations', icon: FileSpreadsheet },
