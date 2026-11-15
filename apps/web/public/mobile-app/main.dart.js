@@ -29357,8 +29357,8 @@ s===$&&A.a()
 return s}return null},
 akX(){var s=0,r=A.H(t.H),q,p=2,o=[],n,m,l,k,j
 var $async$akX=A.I(function(a,b){if(a===1){o.push(b)
-s=p}for(;;)switch(s){case 0:l="https://your-project-ref.supabase.co"
-k="your-anon-key"
+s=p}for(;;)switch(s){case 0:l="https://suwiibbjkcfbdnpclgld.supabase.co"
+k="sb_publishable_LaQvbFzVuBtlMZd8FbeqmA_SbiLrlqo"
 if(J.xv(l,"your-project-ref")||J.xv(k,"your-anon-key")){A.a0x("[Supabase] Running in local offline/demonstration fallback mode.")
 $.akW=!1
 s=1

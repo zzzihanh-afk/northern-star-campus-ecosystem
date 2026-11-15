@@ -6,8 +6,8 @@ class AppConstants {
 
   // Default institution and Supabase parameters
   static const String defaultInstitutionId = 'a0000000-0000-0000-0000-000000000001';
-  static const String defaultSupabaseUrl = 'https://your-project-ref.supabase.co';
-  static const String defaultSupabaseAnonKey = 'your-anon-key';
+  static const String defaultSupabaseUrl = 'https://suwiibbjkcfbdnpclgld.supabase.co';
+  static const String defaultSupabaseAnonKey = 'sb_publishable_LaQvbFzVuBtlMZd8FbeqmA_SbiLrlqo';
 
   // Module Keys matching database
   static const String modAttendance = 'attendance';
