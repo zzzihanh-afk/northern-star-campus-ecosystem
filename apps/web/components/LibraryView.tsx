@@ -15,6 +15,10 @@ import {
   Users,
   AlertCircle,
   X,
+  Upload,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Trash2,
 } from 'lucide-react';
 
 interface BookItem {
@@ -161,6 +165,32 @@ export const LibraryView: React.FC = () => {
   const [newCategory, setNewCategory] = useState('Science');
   const [newIsbn, setNewIsbn] = useState('');
   const [newCopies, setNewCopies] = useState(5);
+  const [newCover, setNewCover] = useState('');
+  const [coverMode, setCoverMode] = useState<'upload' | 'url' | 'preset'>('upload');
+
+  const PRESET_COVERS = [
+    { name: 'Science', url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=300' },
+    { name: 'Mathematics', url: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=300' },
+    { name: 'Language', url: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300' },
+    { name: 'Physics', url: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=300' },
+    { name: 'Literature', url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300' },
+    { name: 'Technology', url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300' },
+  ];
+
+  const handleCoverFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image exceeds 5MB limit.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewCover(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Issue form
   const [issueStudentName, setIssueStudentName] = useState('');
@@ -190,7 +220,7 @@ export const LibraryView: React.FC = () => {
       isbn: newIsbn || `978-${Math.floor(1000000000 + Math.random() * 9000000000)}`,
       available: Number(newCopies) || 5,
       total: Number(newCopies) || 5,
-      cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300',
+      cover: newCover || PRESET_COVERS[0].url,
     };
     setBooks([newBook, ...books]);
     setShowAddModal(false);
@@ -198,6 +228,7 @@ export const LibraryView: React.FC = () => {
     setNewAuthor('');
     setNewIsbn('');
     setNewCopies(5);
+    setNewCover('');
   };
 
   const handleIssueBook = (e: React.FormEvent) => {
@@ -396,11 +427,21 @@ export const LibraryView: React.FC = () => {
               className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex space-x-4"
             >
               <div className="w-20 h-28 relative rounded-xl overflow-hidden bg-gradient-to-br from-[#081528] to-[#122b52] border border-blue-900/40 text-white shadow-sm shrink-0 flex flex-col justify-between p-2.5">
-                <span className="text-[8px] font-bold uppercase tracking-wider text-amber-400 truncate">
+                {book.cover ? (
+                  <img
+                    src={book.cover}
+                    alt={book.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                ) : null}
+                <span className="text-[8px] font-bold uppercase tracking-wider text-amber-400 truncate z-10">
                   {book.category}
                 </span>
-                <BookOpen className="w-6 h-6 text-blue-400/50 self-center" />
-                <span className="text-[9px] font-bold text-slate-100 line-clamp-2 leading-tight">
+                <BookOpen className="w-6 h-6 text-blue-400/50 self-center z-10" />
+                <span className="text-[9px] font-bold text-slate-100 line-clamp-2 leading-tight z-10">
                   {book.title}
                 </span>
               </div>
@@ -523,7 +564,7 @@ export const LibraryView: React.FC = () => {
       {/* Modal: Add New Book */}
       {showAddModal && (
         <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-slate-900">Add Book to Library</h3>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -553,6 +594,128 @@ export const LibraryView: React.FC = () => {
                   className="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
                 />
               </div>
+
+              {/* Book Cover Image Option */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-bold text-slate-700">Book Cover Image</label>
+                  {newCover && (
+                    <button
+                      type="button"
+                      onClick={() => setNewCover('')}
+                      className="text-[10px] text-rose-500 hover:text-rose-700 font-semibold flex items-center space-x-1"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Remove</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Cover Mode Selector */}
+                <div className="flex bg-slate-100 p-1 rounded-xl mb-2 text-[10px] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setCoverMode('upload')}
+                    className={`flex-1 py-1 rounded-lg transition-all flex items-center justify-center space-x-1 ${
+                      coverMode === 'upload' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    <Upload className="w-3 h-3" />
+                    <span>Upload File</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCoverMode('url')}
+                    className={`flex-1 py-1 rounded-lg transition-all flex items-center justify-center space-x-1 ${
+                      coverMode === 'url' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    <LinkIcon className="w-3 h-3" />
+                    <span>Image URL</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCoverMode('preset')}
+                    className={`flex-1 py-1 rounded-lg transition-all flex items-center justify-center space-x-1 ${
+                      coverMode === 'preset' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    <ImageIcon className="w-3 h-3" />
+                    <span>Presets</span>
+                  </button>
+                </div>
+
+                {/* Mode: Upload */}
+                {coverMode === 'upload' && (
+                  <div className="flex items-center space-x-3">
+                    <label className="flex-1 cursor-pointer border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-3 text-center bg-slate-50 hover:bg-blue-50/50 transition-all block">
+                      <Upload className="w-4 h-4 text-blue-600 mx-auto mb-1" />
+                      <span className="text-[11px] font-bold text-slate-700 block">Choose book cover image</span>
+                      <span className="text-[9px] text-slate-400 block">PNG, JPG, WebP (Max 5MB)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                    {newCover && (
+                      <div className="w-14 h-20 rounded-xl overflow-hidden border border-slate-300 shrink-0 relative shadow-sm">
+                        <img src={newCover} alt="Cover preview" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Mode: URL */}
+                {coverMode === 'url' && (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="url"
+                      placeholder="https://example.com/cover.jpg"
+                      value={newCover}
+                      onChange={(e) => setNewCover(e.target.value)}
+                      className="flex-1 text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
+                    />
+                    {newCover && (
+                      <div className="w-10 h-14 rounded-lg overflow-hidden border border-slate-300 shrink-0 relative shadow-sm">
+                        <img
+                          src={newCover}
+                          alt="Cover preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Mode: Presets */}
+                {coverMode === 'preset' && (
+                  <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-50 rounded-xl border border-slate-200">
+                    {PRESET_COVERS.map((preset) => (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => setNewCover(preset.url)}
+                        className={`p-1 rounded-lg border text-left flex items-center space-x-1.5 transition-all ${
+                          newCover === preset.url
+                            ? 'bg-blue-50 border-blue-600 ring-1 ring-blue-600'
+                            : 'bg-white hover:bg-slate-100 border-slate-200'
+                        }`}
+                      >
+                        <div className="w-5 h-7 rounded shrink-0 overflow-hidden bg-slate-200">
+                          <img src={preset.url} alt={preset.name} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-700 truncate">{preset.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Category</label>

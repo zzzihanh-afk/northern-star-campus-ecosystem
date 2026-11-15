@@ -12,6 +12,7 @@ import { ResultsView } from '@/components/ResultsView';
 import { ExaminationsView } from '@/components/ExaminationsView';
 import { FeeManagementView } from '@/components/FeeManagementView';
 import { OperationsView } from '@/components/OperationsView';
+import { AcademicManagementView } from '@/components/AcademicManagementView';
 import { LibraryView } from '@/components/LibraryView';
 import { TransportView } from '@/components/TransportView';
 import { InventoryView } from '@/components/InventoryView';
@@ -93,46 +94,7 @@ export default function Home() {
 
           {activeModule === 'operations' && <OperationsView />}
 
-          {activeModule === 'academics' && (
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-card">
-                <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
-                  Academic Structure & Routine Management
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Classes 1 through 12, Sections, Groups (Science, Commerce, Humanities), and Subject Allocations.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                  <h3 className="text-sm font-bold text-slate-900 mb-2">High School Section (Classes 1 - 10)</h3>
-                  <div className="space-y-2 text-xs">
-                    <div className="p-2.5 bg-slate-50 rounded-xl flex justify-between font-semibold">
-                      <span>Class 9 (Sections A, B)</span>
-                      <span className="text-blue-600">90 Enrolled Students</span>
-                    </div>
-                    <div className="p-2.5 bg-slate-50 rounded-xl flex justify-between font-semibold">
-                      <span>Class 10 (Section A)</span>
-                      <span className="text-blue-600">45 Enrolled Students</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                  <h3 className="text-sm font-bold text-slate-900 mb-2">College Section (HSC 11 & 12)</h3>
-                  <div className="space-y-2 text-xs">
-                    <div className="p-2.5 bg-slate-50 rounded-xl flex justify-between font-semibold">
-                      <span>HSC 1st Year (Science, Commerce, Arts)</span>
-                      <span className="text-blue-600">180 Enrolled Students</span>
-                    </div>
-                    <div className="p-2.5 bg-slate-50 rounded-xl flex justify-between font-semibold">
-                      <span>HSC 2nd Year (Board Candidates)</span>
-                      <span className="text-blue-600">165 Enrolled Students</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {activeModule === 'academics' && <AcademicManagementView />}
 
           {activeModule === 'communication' && (
             <MobileControlCenter onOpenMobilePreview={() => setActiveModule('mobile-preview')} />
