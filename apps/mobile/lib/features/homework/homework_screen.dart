@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/campus_theme.dart';
+import '../../core/supabase_client.dart';
 import '../../models/user_profile.dart';
 
 class HomeworkItem {
@@ -278,6 +279,17 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                               ? notesController.text.trim()
                               : 'Homework submitted on time.';
                         });
+
+                        if (SupabaseService.client != null) {
+                          SupabaseService.client!.from('assignment_submissions').insert({
+                            'assignment_id': item.id.startsWith('hw-') ? 'a0000000-0000-0000-0000-000000000001' : item.id,
+                            'student_id': widget.userProfile?.id ?? '20000000-0000-0000-0000-000000000001',
+                            'submission_text': item.submissionNotes,
+                            'status': 'submitted',
+                          }).then((_) {}).catchError((e) {
+                            print('[Homework] Live submission sync notice: $e');
+                          });
+                        }
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

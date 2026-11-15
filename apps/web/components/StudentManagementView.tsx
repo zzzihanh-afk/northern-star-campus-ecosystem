@@ -47,7 +47,11 @@ export const INITIAL_CAMPUS_CLASSES: ClassDefinition[] = [
   { id: 'c-12', name: 'Class 12 (HSC 2nd Year)', category: 'College', sections: ['Science A', 'Commerce A', 'Humanities A'] },
 ];
 
-export const StudentManagementView: React.FC = () => {
+interface StudentManagementViewProps {
+  onNavigate?: (module: string) => void;
+}
+
+export const StudentManagementView: React.FC<StudentManagementViewProps> = ({ onNavigate }) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [classes, setClasses] = useState<ClassDefinition[]>(INITIAL_CAMPUS_CLASSES);
@@ -385,6 +389,37 @@ export const StudentManagementView: React.FC = () => {
             <span>Admit New Student</span>
           </button>
         </div>
+      </div>
+
+      {/* People & User Directory Switcher */}
+      <div className="bg-white rounded-2xl p-2.5 border border-slate-200/80 shadow-sm flex space-x-2 overflow-x-auto">
+        <button
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-[#0B1E38] text-white shadow-sm flex items-center space-x-2 whitespace-nowrap"
+        >
+          <Users className="w-3.5 h-3.5" />
+          <span>Students Directory ({students.length})</span>
+        </button>
+        <button
+          onClick={() => onNavigate?.('teachers')}
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all flex items-center space-x-2 whitespace-nowrap"
+        >
+          <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
+          <span>Teachers & Faculty (68)</span>
+        </button>
+        <button
+          onClick={() => onNavigate?.('parents')}
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all flex items-center space-x-2 whitespace-nowrap"
+        >
+          <Users className="w-3.5 h-3.5 text-rose-600" />
+          <span>Parents & Guardians (1,180)</span>
+        </button>
+        <button
+          onClick={() => onNavigate?.('staff')}
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all flex items-center space-x-2 whitespace-nowrap"
+        >
+          <School className="w-3.5 h-3.5 text-teal-600" />
+          <span>Campus Staff (24)</span>
+        </button>
       </div>
 
       {/* Filter and Search Bar */}
