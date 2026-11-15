@@ -395,8 +395,14 @@ export const LibraryView: React.FC = () => {
               key={book.id}
               className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex space-x-4"
             >
-              <div className="w-20 h-28 relative rounded-xl overflow-hidden bg-slate-100 shadow-sm shrink-0">
-                <Image src={book.cover} alt={book.title} fill className="object-cover" />
+              <div className="w-20 h-28 relative rounded-xl overflow-hidden bg-gradient-to-br from-[#081528] to-[#122b52] border border-blue-900/40 text-white shadow-sm shrink-0 flex flex-col justify-between p-2.5">
+                <span className="text-[8px] font-bold uppercase tracking-wider text-amber-400 truncate">
+                  {book.category}
+                </span>
+                <BookOpen className="w-6 h-6 text-blue-400/50 self-center" />
+                <span className="text-[9px] font-bold text-slate-100 line-clamp-2 leading-tight">
+                  {book.title}
+                </span>
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 <div>

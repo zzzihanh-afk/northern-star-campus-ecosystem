@@ -42,8 +42,12 @@ export default function Home() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const data = await dataService.getDashboardStats();
-      setStats(data);
+      try {
+        const data = await dataService.getDashboardStats();
+        if (data) setStats(data);
+      } catch (err) {
+        console.warn('Failed to load real-time stats, keeping defaults:', err);
+      }
     };
     fetchStats();
   }, []);
