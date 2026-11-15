@@ -117,7 +117,7 @@ class ResultsScreen extends StatelessWidget {
 
   Widget _buildSubjectRow(String subject, int mark) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.between,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(subject, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: CampusTheme.navyDark)),
         Text('$mark', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: CampusTheme.royalBlue)),

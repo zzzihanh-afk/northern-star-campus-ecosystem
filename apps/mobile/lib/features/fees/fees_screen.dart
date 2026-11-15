@@ -57,7 +57,7 @@ class FeesScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
                       Text('Payment History', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: CampusTheme.navyDark)),
                       Text('View All →', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: CampusTheme.royalBlue)),
@@ -100,7 +100,7 @@ class FeesScreen extends StatelessWidget {
 
   Widget _buildHistoryItem(String month, String receipt, String amount, String status) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.between,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

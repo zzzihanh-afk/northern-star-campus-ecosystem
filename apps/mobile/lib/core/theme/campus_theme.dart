@@ -39,7 +39,7 @@ class CampusTheme {
           fontWeight: FontWeight.w800,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surfaceWhite,
         elevation: 1,
         shadowColor: navyPrimary.withOpacity(0.06),

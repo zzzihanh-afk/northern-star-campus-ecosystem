@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import '../models/app_module.dart';
 import '../core/supabase_client.dart';
 
 class RemoteConfigManager extends ChangeNotifier {
@@ -51,14 +50,12 @@ class RemoteConfigManager extends ChangeNotifier {
         }
 
         // Fetch modules
-        final modulesRes = await client.from('app_modules').select();
-        if (modulesRes != null) {
-          for (var item in modulesRes) {
-            final key = item['module_key'];
-            final enabled = item['is_enabled'] ?? true;
-            if (key != null) {
-              _moduleVisibility[key] = enabled;
-            }
+        final List<dynamic> modulesRes = await client.from('app_modules').select();
+        for (var item in modulesRes) {
+          final key = item['module_key'];
+          final enabled = item['is_enabled'] ?? true;
+          if (key != null) {
+            _moduleVisibility[key] = enabled;
           }
         }
         notifyListeners();

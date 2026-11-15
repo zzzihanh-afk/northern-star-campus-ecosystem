@@ -106,7 +106,7 @@ class StaffHomeScreen extends StatelessWidget {
                 ),
                 const Divider(height: 24, color: Color(0xFFF1F5F9)),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
                     Text('Department: Administration', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: CampusTheme.navyDark)),
                     Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),

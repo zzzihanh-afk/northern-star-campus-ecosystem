@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:northern_star_smart_campus/main.dart';
 import 'package:northern_star_smart_campus/config/remote_config_manager.dart';
