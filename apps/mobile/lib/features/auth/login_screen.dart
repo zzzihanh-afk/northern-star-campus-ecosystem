@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/campus_theme.dart';
 import '../../models/user_profile.dart';
+import '../../core/supabase_client.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function(UserProfile userProfile) onLoginSuccess;
@@ -110,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
     ),
   ];
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     final nameInput = _nameController.text.trim();
     final idInput = _idPasswordController.text.trim();
 
@@ -126,11 +127,41 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = null;
     });
 
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (!mounted) return;
+    UserProfile? matchedProfile;
 
-      // 1. Try to find exact match in registered directory (case insensitive)
-      UserProfile? matchedProfile;
+    // 1. Live Supabase database check
+    if (SupabaseService.isInitialized && SupabaseService.client != null) {
+      try {
+        final client = SupabaseService.client!;
+        final res = await client
+            .from('students')
+            .select('id, student_id_code, roll_number, profiles(full_name, email, avatar_url, phone)')
+            .ilike('student_id_code', idInput)
+            .maybeSingle();
+
+        if (res != null) {
+          final profile = res['profiles'] as Map<String, dynamic>?;
+          matchedProfile = UserProfile(
+            id: res['id'] ?? '',
+            email: profile?['email'] ?? '',
+            fullName: profile?['full_name'] ?? nameInput,
+            role: UserRole.student,
+            studentIdCode: res['student_id_code'],
+            className: 'Class 9',
+            sectionName: 'A',
+            avatarUrl: profile?['avatar_url'] ?? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
+            phone: profile?['phone'],
+          );
+        }
+      } catch (e) {
+        print('[Login] Supabase live check note: $e');
+      }
+    }
+
+    if (!mounted) return;
+
+    // 2. Try to find exact match in registered directory (case insensitive)
+    if (matchedProfile == null) {
       for (final profile in _registeredProfiles) {
         final nameMatches = profile.fullName.toLowerCase().replaceAll('.', '') ==
             nameInput.toLowerCase().replaceAll('.', '');
@@ -141,51 +172,51 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
         }
       }
+    }
 
-      // 2. If not found by exact full name + id, check if ID matches a known user
-      if (matchedProfile == null) {
-        for (final profile in _registeredProfiles) {
-          if ((profile.studentIdCode ?? '').toLowerCase() == idInput.toLowerCase()) {
-            matchedProfile = profile;
-            break;
-          }
+    // 3. If not found by exact full name + id, check if ID matches a known user
+    if (matchedProfile == null) {
+      for (final profile in _registeredProfiles) {
+        if ((profile.studentIdCode ?? '').toLowerCase() == idInput.toLowerCase()) {
+          matchedProfile = profile;
+          break;
         }
       }
+    }
 
-      // 3. Fallback: Allow dynamic entry with Name and ID number
-      if (matchedProfile == null) {
-        final upperId = idInput.toUpperCase();
-        UserRole detectedRole = UserRole.student;
-        String? dept;
-        String? className = 'Class 9';
-        String? section = 'A';
+    // 4. Fallback: Allow dynamic entry with Name and ID number
+    if (matchedProfile == null) {
+      final upperId = idInput.toUpperCase();
+      UserRole detectedRole = UserRole.student;
+      String? dept;
+      String? className = 'Class 9';
+      String? section = 'A';
 
-        if (upperId.startsWith('TCH') || upperId.contains('TEACH')) {
-          detectedRole = UserRole.teacher;
-          dept = 'Faculty';
-        } else if (upperId.startsWith('PRN') || upperId.contains('PARENT')) {
-          detectedRole = UserRole.parent;
-        } else if (upperId.startsWith('STF') || upperId.contains('STAFF')) {
-          detectedRole = UserRole.staff;
-          dept = 'Operations';
-        }
-
-        matchedProfile = UserProfile(
-          id: 'user-${DateTime.now().millisecondsSinceEpoch}',
-          email: '${nameInput.toLowerCase().replaceAll(' ', '.')}@northernstar.edu.bd',
-          fullName: nameInput,
-          role: detectedRole,
-          studentIdCode: idInput,
-          className: className,
-          sectionName: section,
-          department: dept,
-          avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
-        );
+      if (upperId.startsWith('TCH') || upperId.contains('TEACH')) {
+        detectedRole = UserRole.teacher;
+        dept = 'Faculty';
+      } else if (upperId.startsWith('PRN') || upperId.contains('PARENT')) {
+        detectedRole = UserRole.parent;
+      } else if (upperId.startsWith('STF') || upperId.contains('STAFF')) {
+        detectedRole = UserRole.staff;
+        dept = 'Operations';
       }
 
-      setState(() => _isLoading = false);
-      widget.onLoginSuccess(matchedProfile);
-    });
+      matchedProfile = UserProfile(
+        id: 'user-${DateTime.now().millisecondsSinceEpoch}',
+        email: '${nameInput.toLowerCase().replaceAll(' ', '.')}@northernstar.edu.bd',
+        fullName: nameInput,
+        role: detectedRole,
+        studentIdCode: idInput,
+        className: className,
+        sectionName: section,
+        department: dept,
+        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+      );
+    }
+
+    setState(() => _isLoading = false);
+    widget.onLoginSuccess(matchedProfile);
   }
 
   void _fillDemo(String name, String id) {
